@@ -1,10 +1,10 @@
 var ConwayLife = /** @class */ (function () {
-    function ConwayLife(w, h) {
+    function ConwayLife(w, h, cvs) {
         this.width = w;
         this.height = h;
         this.data = this.init(0);
-        this.nextData = this.init(0);
-        this.alive = true;
+        this.canvas = cvs;
+        this.ctx = cvs.getContext("2d");
     }
     ConwayLife.prototype.init = function (v) {
         var dt = new Array(this.height);
@@ -19,24 +19,23 @@ var ConwayLife = /** @class */ (function () {
         return dt;
     };
     ConwayLife.prototype.next = function () {
-        // if (!(this.alive)) { return; }
-        // let max = 0
+        var ndt = new Array(this.height);
         for (var y = 0; y < this.height; y += 1) {
+            var row = new Array(this.width);
             for (var x = 0; x < this.width; x += 1) {
-                this.nextData[y][x] = this.aliveOrDie(x, y, this.get(x, y));
+                if (this.data[y][x] > 0) {
+                    this.ctx.fillStyle = "green";
+                    this.ctx.fillRect(x * 2, y * 2, 2, 2);
+                }
+                else {
+                    this.ctx.fillStyle = "white";
+                    this.ctx.fillRect(x * 2, y * 2, 2, 2);
+                }
+                row[x] = this.aliveOrDie(x, y, this.get(x, y));
             }
+            ndt[y] = row;
         }
-        // this.data = this.nextData
-        for (var y1 = 0; y1 < this.height; y1 += 1) {
-            for (var x1 = 0; x1 < this.width; x1 += 1) {
-                this.set(x1, y1, this.nextData[y1][x1]);
-                // max = this.nextData[y1][x1]
-            }
-        }
-        // if (max == 0) {
-        // this.update_value(1, 2000)
-        // this.alive = false
-        // }
+        this.data = ndt;
     };
     ConwayLife.prototype.aliveOrDie = function (x, y, e) {
         var lifes = 0;
@@ -86,35 +85,16 @@ var ConwayLife = /** @class */ (function () {
     };
     return ConwayLife;
 }());
-var render = function (cl, ctx) {
-    for (var y = 0; y < cl.height; y += 1) {
-        for (var x = 0; x < cl.width; x += 1) {
-            if (cl.data[y][x] > 0) {
-                ctx.fillStyle = "green";
-                ctx.fillRect(x * 5, y * 5, 4, 4);
-            }
-            else {
-                ctx.fillStyle = "white";
-                ctx.fillRect(x * 5, y * 5, 5, 5);
-            }
-        }
-    }
-};
 // test
 function main() {
     var cvs = document.getElementById("canvas");
     var ctx = cvs.getContext("2d");
     var W = cvs.width;
     var H = cvs.height;
-    var cl = new ConwayLife(W / 5, H / 5);
-    cl.update_value(1, 1000);
-    // console.log(cl.data)
-    // console.log(cl.nextData)
+    var cl = new ConwayLife(W / 2, H / 2, cvs);
+    cl.update_value(1, 100000);
     setInterval(function () {
-        // if (cl.alive==false) { ctx.fillText("Nothing left.",0,0,20); return; }
         cl.next();
-        render(cl, ctx);
-        // console.log(cl.nextData)
-    }, 1000 / 80);
+    }, 1000 / 10000);
 }
 main();

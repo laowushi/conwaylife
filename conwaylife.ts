@@ -2,14 +2,14 @@ class ConwayLife {
     width: number;
     height: number;
     data: number[][];
-    nextData: number[][];
-    alive: boolean;
-    constructor(w:number, h:number) {
+    canvas:HTMLCanvasElement;
+    ctx:CanvasRenderingContext2D;
+    constructor(w:number, h:number, cvs:HTMLCanvasElement) {
         this.width = w;
         this.height = h;
         this.data = this.init(0)
-        this.nextData = this.init(0)
-        this.alive = true
+        this.canvas = cvs
+        this.ctx = cvs.getContext("2d")
     }
     init(v: number): number[][]{
         let dt = new Array(this.height)
@@ -24,25 +24,22 @@ class ConwayLife {
         return dt;
     }
     next() {
-        // if (!(this.alive)) { return; }
-        // let max = 0
+        let ndt = new Array(this.height)
         for (let y=0; y<this.height; y+=1) {
+            let row = new Array(this.width)
             for (let x=0; x<this.width; x+=1) {
-                this.nextData[y][x] = this.aliveOrDie(x, y, this.get(x, y))
+                if (this.data[y][x] > 0) {
+                    this.ctx.fillStyle = "green"
+                    this.ctx.fillRect(x*2, y*2, 2, 2)
+                } else {
+                    this.ctx.fillStyle = "white"
+                    this.ctx.fillRect(x*2, y*2, 2, 2)
+                }
+                row[x] = this.aliveOrDie(x, y, this.get(x, y))
             }
+            ndt[y] = row
         }
-        // this.data = this.nextData
-        for (let y1=0; y1<this.height; y1+=1) {
-            for (let x1=0; x1<this.width; x1+=1) {
-                this.set(x1, y1, this.nextData[y1][x1])
-                // max = this.nextData[y1][x1]
-            }
-        }
-
-        // if (max == 0) {
-            // this.update_value(1, 2000)
-            // this.alive = false
-        // }
+        this.data = ndt
     }
     aliveOrDie(x:number, y:number, e:number): number {
         let lifes = 0
@@ -88,36 +85,17 @@ class ConwayLife {
     }
 
 }
-
-const render = (cl: ConwayLife, ctx: CanvasRenderingContext2D) => {
-    for (let y=0; y<cl.height; y+=1) {
-        for (let x=0; x<cl.width; x+=1) {
-            if (cl.data[y][x]>0) {
-                ctx.fillStyle = "green"
-                ctx.fillRect(x*5, y*5, 4, 4)
-            } else {
-                ctx.fillStyle = "white"
-                ctx.fillRect(x*5, y*5, 5, 5)
-            }
-        }
-    }
-}
 // test
 function main() {
     let cvs:HTMLCanvasElement = <HTMLCanvasElement>document.getElementById("canvas")
     let ctx = cvs.getContext("2d")
     let W = cvs.width
     let H = cvs.height
-    let cl = new ConwayLife(W/5, H/5)
-    cl.update_value(1, 1000)
-    // console.log(cl.data)
-    // console.log(cl.nextData)
+    let cl = new ConwayLife(W/2, H/2, cvs)
+    cl.update_value(1, 100000)
     setInterval(()=>{
-        // if (cl.alive==false) { ctx.fillText("Nothing left.",0,0,20); return; }
         cl.next()
-        render(cl, ctx)
-        // console.log(cl.nextData)
-    }, 1000/80)
+    }, 1000/10000)
 
 }
 
