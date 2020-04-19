@@ -63,9 +63,6 @@ var ConwayLife = /** @class */ (function () {
         var lifes = 0;
         var res = 0;
         var c = this.get(x, y);
-        // if (c==1) {
-        //     lifes = -1
-        // }
         for (var y1 = Math.max(y - 1, 0); y1 <= Math.min(y + 1, this.height - 1); y1 += 1) {
             for (var x1 = Math.max(x - 1, 0); x1 <= Math.min(x + 1, this.width - 1); x1 += 1) {
                 lifes += this.get(x1, y1);
@@ -81,17 +78,6 @@ var ConwayLife = /** @class */ (function () {
                 res = 1;
             }
         }
-        // if (lifes==2 || lifes==3) {
-        //     res = c;
-        // } else if (lifes==4) {
-        //     res = 1;
-        // } //else if (lifes==1) {
-        //     // if (c==1){
-        //         // res = c
-        //     // }}
-        // else {
-        //     res = 0;
-        // }
         return res;
     };
     ConwayLife.prototype.get = function (x, y) {
