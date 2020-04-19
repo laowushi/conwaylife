@@ -1,10 +1,19 @@
 var ConwayLife = /** @class */ (function () {
-    function ConwayLife(w, h, cvs) {
-        this.width = w;
-        this.height = h;
+    function ConwayLife(cellsize, cvs) {
+        var _this = this;
+        this.cellsize = Math.max(2, cellsize);
+        this.width = Math.floor(cvs.width / this.cellsize) - 1;
+        this.height = Math.floor(cvs.width / this.cellsize) - 1;
         this.data = this.init(0);
         this.canvas = cvs;
         this.ctx = cvs.getContext("2d");
+        this.isPause = false;
+        //event
+        window.addEventListener("keypress", function (e) {
+            if (e.key == 'p') {
+                _this.pause();
+            }
+        });
     }
     ConwayLife.prototype.init = function (v) {
         var dt = new Array(this.height);
@@ -18,19 +27,32 @@ var ConwayLife = /** @class */ (function () {
         }
         return dt;
     };
+    ConwayLife.prototype.pause = function () {
+        if (this.isPause) {
+            this.isPause = false;
+            return;
+        }
+        if (!(this.isPause)) {
+            this.isPause = true;
+            return;
+        }
+    };
     ConwayLife.prototype.next = function () {
+        if (this.isPause) {
+            return;
+        }
         var ndt = new Array(this.height);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         for (var y = 0; y < this.height; y += 1) {
             var row = new Array(this.width);
             for (var x = 0; x < this.width; x += 1) {
                 if (this.data[y][x] > 0) {
                     this.ctx.fillStyle = "green";
-                    this.ctx.fillRect(x * 2, y * 2, 2, 2);
-                }
-                else {
-                    this.ctx.fillStyle = "white";
-                    this.ctx.fillRect(x * 2, y * 2, 2, 2);
-                }
+                    this.ctx.fillRect(x * this.cellsize, y * this.cellsize, this.cellsize - 1, this.cellsize - 1);
+                } //else {
+                // this.ctx.fillStyle = "white"
+                // this.ctx.fillRect(x*2, y*2, 2, 2)
+                // }
                 row[x] = this.aliveOrDie(x, y, this.get(x, y));
             }
             ndt[y] = row;
@@ -41,23 +63,35 @@ var ConwayLife = /** @class */ (function () {
         var lifes = 0;
         var res = 0;
         var c = this.get(x, y);
-        if (c > 0) {
-            lifes = -1;
-        }
+        // if (c==1) {
+        //     lifes = -1
+        // }
         for (var y1 = Math.max(y - 1, 0); y1 <= Math.min(y + 1, this.height - 1); y1 += 1) {
             for (var x1 = Math.max(x - 1, 0); x1 <= Math.min(x + 1, this.width - 1); x1 += 1) {
                 lifes += this.get(x1, y1);
             }
         }
-        if (lifes == 2) {
-            res = c;
-        }
-        else if (lifes == 3) {
-            res = 1;
+        if (c == 1) {
+            if (lifes == 3 || lifes == 4) {
+                res = c;
+            }
         }
         else {
-            res = 0;
+            if (lifes == 3) {
+                res = 1;
+            }
         }
+        // if (lifes==2 || lifes==3) {
+        //     res = c;
+        // } else if (lifes==4) {
+        //     res = 1;
+        // } //else if (lifes==1) {
+        //     // if (c==1){
+        //         // res = c
+        //     // }}
+        // else {
+        //     res = 0;
+        // }
         return res;
     };
     ConwayLife.prototype.get = function (x, y) {
@@ -91,10 +125,10 @@ function main() {
     var ctx = cvs.getContext("2d");
     var W = cvs.width;
     var H = cvs.height;
-    var cl = new ConwayLife(W / 2, H / 2, cvs);
-    cl.update_value(1, 100000);
+    var cl = new ConwayLife(2, cvs);
+    cl.update_value(1, 30000 * 2);
     setInterval(function () {
         cl.next();
-    }, 1000 / 10000);
+    }, 1000 / 100);
 }
 main();
