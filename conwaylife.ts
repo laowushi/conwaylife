@@ -16,7 +16,7 @@ class ConwayLife {
         this.isPause = false
         //event
         window.addEventListener("keypress", (e)=>{
-            if (e.key=='p'){
+            if (e.key==='p'){
                 this.pause()
             }
         })
