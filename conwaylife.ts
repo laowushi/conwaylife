@@ -47,10 +47,7 @@ class ConwayLife {
                 if (this.data[y][x] > 0) {
                     this.ctx.fillStyle = "green"
                     this.ctx.fillRect(x*this.cellsize, y*this.cellsize, this.cellsize-1, this.cellsize-1)
-                } //else {
-                    // this.ctx.fillStyle = "white"
-                    // this.ctx.fillRect(x*2, y*2, 2, 2)
-                // }
+                } 
                 row[x] = this.aliveOrDie(x, y, this.get(x, y))
             }
             ndt[y] = row
